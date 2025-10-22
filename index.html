@@ -887,6 +887,8 @@
 
                     <div className="space-y-4 mb-6">
                         <h3 className="font-bold">Log Your Sets</h3>
+                        
+                        {/* Display existing sets */}
                         {Object.keys(currentSets).map(setIndex => (
                             <div key={setIndex} className="bg-gray-800 rounded-xl p-4">
                                 <div className="flex items-center gap-4">
