@@ -379,6 +379,27 @@
                 setCurrentView('activeWorkout');
             };
 
+            // Initialize workout log with target sets
+            const initializeWorkoutLog = (exercise) => {
+                const targetSets = exercise.customSets || exercise.sets;
+                const targetReps = exercise.customReps || exercise.reps;
+                const targetWeight = exercise.customWeight || exercise.weight;
+                
+                if (!workoutLog[exercise.name]) {
+                    const initialSets = {};
+                    for (let i = 0; i < targetSets; i++) {
+                        initialSets[i] = {
+                            weight: exercise.hasWeight ? targetWeight : '',
+                            reps: targetReps
+                        };
+                    }
+                    setWorkoutLog(prev => ({
+                        ...prev,
+                        [exercise.name]: initialSets
+                    }));
+                }
+            };
+
             // Handle set logging
             const handleSetLog = (exerciseName, setIndex, field, value) => {
                 setWorkoutLog(prev => ({
@@ -521,6 +542,7 @@
                             allExercises={workoutOrder}
                             expandedWorkoutExercises={expandedWorkoutExercises}
                             onToggleWorkoutExerciseExpansion={toggleWorkoutExerciseExpansion}
+                            initializeWorkoutLog={initializeWorkoutLog}
                         />;
                     case 'workoutComplete':
                         return <WorkoutComplete onComplete={completeWorkout} onBack={goBack} />;
@@ -866,9 +888,15 @@
         };
 
         // Active Workout Component
-        const ActiveWorkout = ({ exercise, exerciseIndex, totalExercises, workoutLog, onSetLog, onAddSet, onRemoveSet, onNext, onSkip, onChange, onComplete, onBack, allExercises, expandedWorkoutExercises, onToggleWorkoutExerciseExpansion }) => {
+        const ActiveWorkout = ({ exercise, exerciseIndex, totalExercises, workoutLog, onSetLog, onAddSet, onRemoveSet, onNext, onSkip, onChange, onComplete, onBack, allExercises, expandedWorkoutExercises, onToggleWorkoutExerciseExpansion, initializeWorkoutLog }) => {
             const currentSets = workoutLog[exercise.name] || {};
-            const setCount = Object.keys(currentSets).length;
+
+            // Initialize workout log for all exercises when component mounts
+            useEffect(() => {
+                allExercises.forEach(ex => {
+                    initializeWorkoutLog(ex);
+                });
+            }, []);
 
             return (
                 <div className="p-6">
