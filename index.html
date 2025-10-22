@@ -202,6 +202,7 @@
             const [completedWorkouts, setCompletedWorkouts] = useState([]);
             const [expandedExercises, setExpandedExercises] = useState({});
             const [exerciseDetails, setExerciseDetails] = useState({});
+            const [expandedWorkoutExercises, setExpandedWorkoutExercises] = useState({});
 
             // Initialize IndexedDB
             useEffect(() => {
@@ -318,6 +319,14 @@
             // Toggle exercise expansion
             const toggleExerciseExpansion = (exerciseName) => {
                 setExpandedExercises(prev => ({
+                    ...prev,
+                    [exerciseName]: !prev[exerciseName]
+                }));
+            };
+
+            // Toggle workout exercise expansion
+            const toggleWorkoutExerciseExpansion = (exerciseName) => {
+                setExpandedWorkoutExercises(prev => ({
                     ...prev,
                     [exerciseName]: !prev[exerciseName]
                 }));
@@ -460,6 +469,7 @@
                 setWorkoutStartTime(null);
                 setExpandedExercises({});
                 setExerciseDetails({});
+                setExpandedWorkoutExercises({});
             };
 
             // Render current view
@@ -508,6 +518,9 @@
                             onChange={changeExercise}
                             onComplete={completeExercise}
                             onBack={goBack}
+                            allExercises={workoutOrder}
+                            expandedWorkoutExercises={expandedWorkoutExercises}
+                            onToggleWorkoutExerciseExpansion={toggleWorkoutExerciseExpansion}
                         />;
                     case 'workoutComplete':
                         return <WorkoutComplete onComplete={completeWorkout} onBack={goBack} />;
@@ -853,7 +866,7 @@
         };
 
         // Active Workout Component
-        const ActiveWorkout = ({ exercise, exerciseIndex, totalExercises, workoutLog, onSetLog, onAddSet, onRemoveSet, onNext, onSkip, onChange, onComplete, onBack }) => {
+        const ActiveWorkout = ({ exercise, exerciseIndex, totalExercises, workoutLog, onSetLog, onAddSet, onRemoveSet, onNext, onSkip, onChange, onComplete, onBack, allExercises, expandedWorkoutExercises, onToggleWorkoutExerciseExpansion }) => {
             const currentSets = workoutLog[exercise.name] || {};
             const setCount = Object.keys(currentSets).length;
 
@@ -936,6 +949,89 @@
                             <PlusIcon />
                             Add Set
                         </button>
+                    </div>
+
+                    {/* Show all exercises in workout with expandable logging */}
+                    <div className="space-y-4 mb-6">
+                        <h3 className="font-bold">All Exercises in Workout</h3>
+                        {allExercises.map((workoutExercise, index) => (
+                            <div key={workoutExercise.name} className="bg-gray-800 rounded-xl p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                        <h4 className="font-bold">{workoutExercise.name}</h4>
+                                        <p className="text-sm text-gray-300">
+                                            Target: {workoutExercise.customSets || workoutExercise.sets} sets × {workoutExercise.customReps || workoutExercise.reps} reps
+                                        </p>
+                                        {workoutExercise.hasWeight && (
+                                            <p className="text-sm text-gray-400">
+                                                Weight: {workoutExercise.customWeight || workoutExercise.weight}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => onToggleWorkoutExerciseExpansion(workoutExercise.name)}
+                                        className="bg-gray-600 hover:bg-gray-500 text-white p-2 rounded-lg transition"
+                                    >
+                                        {expandedWorkoutExercises[workoutExercise.name] ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                                    </button>
+                                </div>
+                                
+                                {expandedWorkoutExercises[workoutExercise.name] && (
+                                    <div className="mt-4 pt-4 border-t border-gray-700">
+                                        <h5 className="font-bold mb-3">Log Your Sets for {workoutExercise.name}</h5>
+                                        
+                                        {/* Display existing sets for this exercise */}
+                                        {Object.keys(workoutLog[workoutExercise.name] || {}).map(setIndex => (
+                                            <div key={setIndex} className="bg-gray-700 rounded-xl p-3 mb-3">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
+                                                        {parseInt(setIndex) + 1}
+                                                    </div>
+                                                    <div className="flex-1 grid grid-cols-2 gap-4">
+                                                        {workoutExercise.hasWeight && (
+                                                            <div>
+                                                                <label className="text-xs text-gray-300">Weight</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={workoutLog[workoutExercise.name]?.[setIndex]?.weight || ''}
+                                                                    onChange={(e) => onSetLog(workoutExercise.name, setIndex, 'weight', e.target.value)}
+                                                                    className="w-full bg-gray-600 text-white p-2 rounded-lg text-sm"
+                                                                    placeholder="Weight"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        <div>
+                                                            <label className="text-xs text-gray-300">Reps</label>
+                                                            <input
+                                                                type="text"
+                                                                value={workoutLog[workoutExercise.name]?.[setIndex]?.reps || ''}
+                                                                onChange={(e) => onSetLog(workoutExercise.name, setIndex, 'reps', e.target.value)}
+                                                                className="w-full bg-gray-600 text-white p-2 rounded-lg text-sm"
+                                                                placeholder="Reps"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => onRemoveSet(workoutExercise.name, setIndex)}
+                                                        className="bg-red-600 hover:bg-red-700 text-white p-1 rounded-lg transition"
+                                                    >
+                                                        <TrashIcon />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        
+                                        <button
+                                            onClick={() => onAddSet(workoutExercise.name)}
+                                            className="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm"
+                                        >
+                                            <PlusIcon />
+                                            Add Set for {workoutExercise.name}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
 
                     <div className="space-y-4">
