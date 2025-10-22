@@ -12,6 +12,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
     <div id="root"></div>
@@ -87,6 +88,36 @@
             </svg>
         );
 
+        const ArrowLeftIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12,19 5,12 12,5"/>
+            </svg>
+        );
+
+        const ChevronDownIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6,9 12,15 18,9"/>
+            </svg>
+        );
+
+        const ChevronUpIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="18,15 12,9 6,15"/>
+            </svg>
+        );
+
+        const GripIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="12" r="1"/>
+                <circle cx="9" cy="5" r="1"/>
+                <circle cx="9" cy="19" r="1"/>
+                <circle cx="20" cy="12" r="1"/>
+                <circle cx="20" cy="5" r="1"/>
+                <circle cx="20" cy="19" r="1"/>
+            </svg>
+        );
+
         const StarIcon = () => (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"/>
@@ -97,44 +128,44 @@
         const workoutDatabase = {
             upperBody: {
                 exercises: [
-                    { name: "Bench Press", sets: 4, reps: "8-12", weight: "Body weight", equipment: "Barbell", muscleGroups: ["Chest", "Triceps", "Shoulders"], injuryNotes: "Avoid if shoulder impingement" },
-                    { name: "Pull-ups", sets: 3, reps: "6-10", weight: "Body weight", equipment: "Pull-up bar", muscleGroups: ["Back", "Biceps"], injuryNotes: "Use assisted if shoulder issues" },
-                    { name: "Overhead Press", sets: 3, reps: "8-12", weight: "Light to moderate", equipment: "Dumbbells", muscleGroups: ["Shoulders", "Triceps"], injuryNotes: "Avoid if shoulder impingement" },
-                    { name: "Bent-over Rows", sets: 3, reps: "8-12", weight: "Moderate", equipment: "Barbell", muscleGroups: ["Back", "Biceps"], injuryNotes: "Keep back straight, avoid if lower back issues" },
-                    { name: "Dips", sets: 3, reps: "8-15", weight: "Body weight", equipment: "Dip bars", muscleGroups: ["Chest", "Triceps"], injuryNotes: "Use assisted if shoulder issues" },
-                    { name: "Bicep Curls", sets: 3, reps: "10-15", weight: "Light to moderate", equipment: "Dumbbells", muscleGroups: ["Biceps"], injuryNotes: "Avoid if elbow tendonitis" },
-                    { name: "Tricep Extensions", sets: 3, reps: "10-15", weight: "Light", equipment: "Dumbbells", muscleGroups: ["Triceps"], injuryNotes: "Avoid if elbow issues" },
-                    { name: "Lateral Raises", sets: 3, reps: "12-15", weight: "Light", equipment: "Dumbbells", muscleGroups: ["Shoulders"], injuryNotes: "Avoid if shoulder impingement" }
+                    { name: "Bench Press", sets: 4, reps: "8-12", weight: "Body weight", equipment: "Barbell", muscleGroups: ["Chest", "Triceps", "Shoulders"], injuryNotes: "Avoid if shoulder impingement", hasWeight: true },
+                    { name: "Pull-ups", sets: 3, reps: "6-10", weight: "Body weight", equipment: "Pull-up bar", muscleGroups: ["Back", "Biceps"], injuryNotes: "Use assisted if shoulder issues", hasWeight: false },
+                    { name: "Overhead Press", sets: 3, reps: "8-12", weight: "Light to moderate", equipment: "Dumbbells", muscleGroups: ["Shoulders", "Triceps"], injuryNotes: "Avoid if shoulder impingement", hasWeight: true },
+                    { name: "Bent-over Rows", sets: 3, reps: "8-12", weight: "Moderate", equipment: "Barbell", muscleGroups: ["Back", "Biceps"], injuryNotes: "Keep back straight, avoid if lower back issues", hasWeight: true },
+                    { name: "Dips", sets: 3, reps: "8-15", weight: "Body weight", equipment: "Dip bars", muscleGroups: ["Chest", "Triceps"], injuryNotes: "Use assisted if shoulder issues", hasWeight: false },
+                    { name: "Bicep Curls", sets: 3, reps: "10-15", weight: "Light to moderate", equipment: "Dumbbells", muscleGroups: ["Biceps"], injuryNotes: "Avoid if elbow tendonitis", hasWeight: true },
+                    { name: "Tricep Extensions", sets: 3, reps: "10-15", weight: "Light", equipment: "Dumbbells", muscleGroups: ["Triceps"], injuryNotes: "Avoid if elbow issues", hasWeight: true },
+                    { name: "Lateral Raises", sets: 3, reps: "12-15", weight: "Light", equipment: "Dumbbells", muscleGroups: ["Shoulders"], injuryNotes: "Avoid if shoulder impingement", hasWeight: true }
                 ]
             },
             lowerBody: {
                 exercises: [
-                    { name: "Squats", sets: 4, reps: "8-12", weight: "Body weight to moderate", equipment: "Barbell", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Avoid if knee issues, use box squats" },
-                    { name: "Deadlifts", sets: 3, reps: "5-8", weight: "Moderate to heavy", equipment: "Barbell", muscleGroups: ["Hamstrings", "Glutes", "Back"], injuryNotes: "Avoid if lower back issues" },
-                    { name: "Lunges", sets: 3, reps: "10-12 each leg", weight: "Body weight to light", equipment: "Dumbbells", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Avoid if knee issues" },
-                    { name: "Leg Press", sets: 3, reps: "12-15", weight: "Moderate", equipment: "Leg press machine", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Safer alternative to squats" },
-                    { name: "Romanian Deadlifts", sets: 3, reps: "8-12", weight: "Light to moderate", equipment: "Dumbbells", muscleGroups: ["Hamstrings", "Glutes"], injuryNotes: "Avoid if lower back issues" },
-                    { name: "Calf Raises", sets: 3, reps: "15-20", weight: "Body weight to moderate", equipment: "Calf raise machine", muscleGroups: ["Calves"], injuryNotes: "Safe for most injuries" },
-                    { name: "Hip Thrusts", sets: 3, reps: "12-15", weight: "Body weight to moderate", equipment: "Barbell", muscleGroups: ["Glutes"], injuryNotes: "Safe for most injuries" },
-                    { name: "Leg Curls", sets: 3, reps: "12-15", weight: "Light to moderate", equipment: "Leg curl machine", muscleGroups: ["Hamstrings"], injuryNotes: "Safe for most injuries" }
+                    { name: "Squats", sets: 4, reps: "8-12", weight: "Body weight to moderate", equipment: "Barbell", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Avoid if knee issues, use box squats", hasWeight: true },
+                    { name: "Deadlifts", sets: 3, reps: "5-8", weight: "Moderate to heavy", equipment: "Barbell", muscleGroups: ["Hamstrings", "Glutes", "Back"], injuryNotes: "Avoid if lower back issues", hasWeight: true },
+                    { name: "Lunges", sets: 3, reps: "10-12 each leg", weight: "Body weight to light", equipment: "Dumbbells", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Avoid if knee issues", hasWeight: true },
+                    { name: "Leg Press", sets: 3, reps: "12-15", weight: "Moderate", equipment: "Leg press machine", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Safer alternative to squats", hasWeight: true },
+                    { name: "Romanian Deadlifts", sets: 3, reps: "8-12", weight: "Light to moderate", equipment: "Dumbbells", muscleGroups: ["Hamstrings", "Glutes"], injuryNotes: "Avoid if lower back issues", hasWeight: true },
+                    { name: "Calf Raises", sets: 3, reps: "15-20", weight: "Body weight to moderate", equipment: "Calf raise machine", muscleGroups: ["Calves"], injuryNotes: "Safe for most injuries", hasWeight: true },
+                    { name: "Hip Thrusts", sets: 3, reps: "12-15", weight: "Body weight to moderate", equipment: "Barbell", muscleGroups: ["Glutes"], injuryNotes: "Safe for most injuries", hasWeight: true },
+                    { name: "Leg Curls", sets: 3, reps: "12-15", weight: "Light to moderate", equipment: "Leg curl machine", muscleGroups: ["Hamstrings"], injuryNotes: "Safe for most injuries", hasWeight: true }
                 ]
             },
             circuit: {
                 exercises: [
-                    { name: "Push-ups", sets: 3, reps: "8-15", weight: "Body weight", equipment: "None", muscleGroups: ["Chest", "Triceps"], injuryNotes: "Modify if shoulder issues" },
-                    { name: "Mountain Climbers", sets: 3, reps: "20-30 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Core", "Cardio"], injuryNotes: "Avoid if knee issues" },
-                    { name: "Burpees", sets: 3, reps: "5-10", weight: "Body weight", equipment: "None", muscleGroups: ["Full body", "Cardio"], injuryNotes: "Modify if knee or shoulder issues" },
-                    { name: "Plank", sets: 3, reps: "30-60 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Core"], injuryNotes: "Safe for most injuries" },
-                    { name: "Jump Squats", sets: 3, reps: "10-15", weight: "Body weight", equipment: "None", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Avoid if knee issues" },
-                    { name: "High Knees", sets: 3, reps: "20-30 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Cardio", "Core"], injuryNotes: "Avoid if knee issues" }
+                    { name: "Push-ups", sets: 3, reps: "8-15", weight: "Body weight", equipment: "None", muscleGroups: ["Chest", "Triceps"], injuryNotes: "Modify if shoulder issues", hasWeight: false },
+                    { name: "Mountain Climbers", sets: 3, reps: "20-30 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Core", "Cardio"], injuryNotes: "Avoid if knee issues", hasWeight: false },
+                    { name: "Burpees", sets: 3, reps: "5-10", weight: "Body weight", equipment: "None", muscleGroups: ["Full body", "Cardio"], injuryNotes: "Modify if knee or shoulder issues", hasWeight: false },
+                    { name: "Plank", sets: 3, reps: "30-60 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Core"], injuryNotes: "Safe for most injuries", hasWeight: false },
+                    { name: "Jump Squats", sets: 3, reps: "10-15", weight: "Body weight", equipment: "None", muscleGroups: ["Quads", "Glutes"], injuryNotes: "Avoid if knee issues", hasWeight: false },
+                    { name: "High Knees", sets: 3, reps: "20-30 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Cardio", "Core"], injuryNotes: "Avoid if knee issues", hasWeight: false }
                 ]
             },
             surfing: {
                 exercises: [
-                    { name: "Surfer's Stretch", sets: 2, reps: "30-60 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Hip flexors", "Core"], injuryNotes: "Great for hip mobility" },
-                    { name: "Paddle Simulation", sets: 3, reps: "20-30 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Shoulders", "Core"], injuryNotes: "Mimics paddling motion" },
-                    { name: "Pop-up Practice", sets: 3, reps: "10-15", weight: "Body weight", equipment: "None", muscleGroups: ["Core", "Legs"], injuryNotes: "Practice getting up on board" },
-                    { name: "Hip Circles", sets: 2, reps: "10 each direction", weight: "Body weight", equipment: "None", muscleGroups: ["Hip mobility"], injuryNotes: "Improves hip flexibility" }
+                    { name: "Surfer's Stretch", sets: 2, reps: "30-60 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Hip flexors", "Core"], injuryNotes: "Great for hip mobility", hasWeight: false },
+                    { name: "Paddle Simulation", sets: 3, reps: "20-30 seconds", weight: "Body weight", equipment: "None", muscleGroups: ["Shoulders", "Core"], injuryNotes: "Mimics paddling motion", hasWeight: false },
+                    { name: "Pop-up Practice", sets: 3, reps: "10-15", weight: "Body weight", equipment: "None", muscleGroups: ["Core", "Legs"], injuryNotes: "Practice getting up on board", hasWeight: false },
+                    { name: "Hip Circles", sets: 2, reps: "10 each direction", weight: "Body weight", equipment: "None", muscleGroups: ["Hip mobility"], injuryNotes: "Improves hip flexibility", hasWeight: false }
                 ]
             }
         };
@@ -145,6 +176,17 @@
             const searchQuery = `${exerciseName} ${preferredChannels[Math.floor(Math.random() * preferredChannels.length)]}`;
             return `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
         };
+
+        // Back Button Component
+        const BackButton = ({ onClick, className = "" }) => (
+            <button
+                onClick={onClick}
+                className={`flex items-center gap-2 text-gray-400 hover:text-white transition ${className}`}
+            >
+                <ArrowLeftIcon />
+                Back
+            </button>
+        );
 
         // Main App Component
         const App = () => {
@@ -158,6 +200,8 @@
             const [workoutLog, setWorkoutLog] = useState({});
             const [workoutStartTime, setWorkoutStartTime] = useState(null);
             const [completedWorkouts, setCompletedWorkouts] = useState([]);
+            const [expandedExercises, setExpandedExercises] = useState({});
+            const [exerciseDetails, setExerciseDetails] = useState({});
 
             // Initialize IndexedDB
             useEffect(() => {
@@ -213,6 +257,20 @@
                 return exercises;
             };
 
+            // Navigation functions
+            const goBack = () => {
+                const viewHistory = {
+                    'workoutType': 'home',
+                    'workoutFocus': 'workoutType',
+                    'injurySelection': workoutType === 'Gym' ? 'workoutFocus' : 'workoutType',
+                    'exerciseSelection': 'injurySelection',
+                    'exerciseOrdering': 'exerciseSelection',
+                    'activeWorkout': 'exerciseOrdering',
+                    'workoutComplete': 'home'
+                };
+                setCurrentView(viewHistory[currentView] || 'home');
+            };
+
             // Start workout selection
             const startWorkoutSelection = () => {
                 setCurrentView('workoutType');
@@ -224,7 +282,6 @@
                 if (type === 'Gym') {
                     setCurrentView('workoutFocus');
                 } else {
-                    // For other types, go directly to injury selection
                     setCurrentView('injurySelection');
                 }
             };
@@ -258,16 +315,52 @@
                 }
             };
 
+            // Toggle exercise expansion
+            const toggleExerciseExpansion = (exerciseName) => {
+                setExpandedExercises(prev => ({
+                    ...prev,
+                    [exerciseName]: !prev[exerciseName]
+                }));
+            };
+
+            // Handle exercise details change
+            const handleExerciseDetailsChange = (exerciseName, field, value) => {
+                setExerciseDetails(prev => ({
+                    ...prev,
+                    [exerciseName]: {
+                        ...prev[exerciseName],
+                        [field]: value
+                    }
+                }));
+            };
+
             // Create circuit from selected exercises
             const createCircuit = () => {
-                setWorkoutOrder(selectedExercises);
+                const exercisesWithDetails = selectedExercises.map(exercise => ({
+                    ...exercise,
+                    customSets: exerciseDetails[exercise.name]?.sets || exercise.sets,
+                    customReps: exerciseDetails[exercise.name]?.reps || exercise.reps,
+                    customWeight: exerciseDetails[exercise.name]?.weight || exercise.weight
+                }));
+                setWorkoutOrder(exercisesWithDetails);
                 setCurrentView('exerciseOrdering');
             };
 
             // Start individual exercise
             const startIndividualExercise = (exercise) => {
-                setWorkoutOrder([exercise]);
+                const exerciseWithDetails = {
+                    ...exercise,
+                    customSets: exerciseDetails[exercise.name]?.sets || exercise.sets,
+                    customReps: exerciseDetails[exercise.name]?.reps || exercise.reps,
+                    customWeight: exerciseDetails[exercise.name]?.weight || exercise.weight
+                };
+                setWorkoutOrder([exerciseWithDetails]);
                 setCurrentView('exerciseOrdering');
+            };
+
+            // Reorder exercises
+            const reorderExercises = (newOrder) => {
+                setWorkoutOrder(newOrder);
             };
 
             // Start workout
@@ -315,12 +408,16 @@
                 });
             };
 
+            // Complete exercise
+            const completeExercise = () => {
+                nextExercise();
+            };
+
             // Next exercise
             const nextExercise = () => {
                 if (currentExerciseIndex < workoutOrder.length - 1) {
                     setCurrentExerciseIndex(currentExerciseIndex + 1);
                 } else {
-                    // Workout complete
                     setCurrentView('workoutComplete');
                 }
             };
@@ -345,7 +442,7 @@
                     log: workoutLog,
                     startTime: workoutStartTime,
                     endTime: new Date(),
-                    duration: Math.round((new Date() - workoutStartTime) / 60000) // minutes
+                    duration: Math.round((new Date() - workoutStartTime) / 60000)
                 };
                 
                 setCompletedWorkouts(prev => [...prev, workoutData]);
@@ -361,6 +458,8 @@
                 setCurrentExerciseIndex(0);
                 setWorkoutLog({});
                 setWorkoutStartTime(null);
+                setExpandedExercises({});
+                setExerciseDetails({});
             };
 
             // Render current view
@@ -369,11 +468,11 @@
                     case 'home':
                         return <HomeView onStartWorkout={startWorkoutSelection} completedWorkouts={completedWorkouts} />;
                     case 'workoutType':
-                        return <WorkoutTypeSelection onSelect={handleWorkoutTypeSelection} />;
+                        return <WorkoutTypeSelection onSelect={handleWorkoutTypeSelection} onBack={goBack} />;
                     case 'workoutFocus':
-                        return <WorkoutFocusSelection onSelect={handleWorkoutFocusSelection} />;
+                        return <WorkoutFocusSelection onSelect={handleWorkoutFocusSelection} onBack={goBack} />;
                     case 'injurySelection':
-                        return <InjurySelection injuries={injuries} onToggle={handleInjurySelection} onProceed={proceedToExerciseSelection} />;
+                        return <InjurySelection injuries={injuries} onToggle={handleInjurySelection} onProceed={proceedToExerciseSelection} onBack={goBack} />;
                     case 'exerciseSelection':
                         return <ExerciseSelection 
                             exercises={getAvailableExercises()} 
@@ -382,11 +481,18 @@
                             onCreateCircuit={createCircuit}
                             onStartIndividual={startIndividualExercise}
                             injuries={injuries}
+                            expandedExercises={expandedExercises}
+                            onToggleExpansion={toggleExerciseExpansion}
+                            exerciseDetails={exerciseDetails}
+                            onDetailsChange={handleExerciseDetailsChange}
+                            onBack={goBack}
                         />;
                     case 'exerciseOrdering':
                         return <ExerciseOrdering 
                             exercises={workoutOrder}
                             onStart={startWorkout}
+                            onReorder={reorderExercises}
+                            onBack={goBack}
                         />;
                     case 'activeWorkout':
                         return <ActiveWorkout 
@@ -400,9 +506,11 @@
                             onNext={nextExercise}
                             onSkip={skipExercise}
                             onChange={changeExercise}
+                            onComplete={completeExercise}
+                            onBack={goBack}
                         />;
                     case 'workoutComplete':
-                        return <WorkoutComplete onComplete={completeWorkout} />;
+                        return <WorkoutComplete onComplete={completeWorkout} onBack={goBack} />;
                     default:
                         return <HomeView onStartWorkout={startWorkoutSelection} completedWorkouts={completedWorkouts} />;
                 }
@@ -465,7 +573,7 @@
         };
 
         // Workout Type Selection Component
-        const WorkoutTypeSelection = ({ onSelect }) => {
+        const WorkoutTypeSelection = ({ onSelect, onBack }) => {
             const workoutTypes = [
                 { name: 'Gym', icon: <DumbbellIcon />, color: 'bg-blue-600' },
                 { name: 'Run', icon: <PlayIcon />, color: 'bg-green-600' },
@@ -476,6 +584,7 @@
 
             return (
                 <div className="p-6">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <h2 className="text-2xl font-bold mb-6">Choose Your Workout</h2>
                     <div className="space-y-4">
                         {workoutTypes.map(type => (
@@ -494,7 +603,7 @@
         };
 
         // Workout Focus Selection Component
-        const WorkoutFocusSelection = ({ onSelect }) => {
+        const WorkoutFocusSelection = ({ onSelect, onBack }) => {
             const focusOptions = [
                 { name: 'Upper Body', description: 'Chest, back, shoulders, arms' },
                 { name: 'Lower Body', description: 'Legs, glutes, calves' },
@@ -503,6 +612,7 @@
 
             return (
                 <div className="p-6">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <h2 className="text-2xl font-bold mb-6">What would you like to focus on?</h2>
                     <div className="space-y-4">
                         {focusOptions.map(option => (
@@ -521,7 +631,7 @@
         };
 
         // Injury Selection Component
-        const InjurySelection = ({ injuries, onToggle, onProceed }) => {
+        const InjurySelection = ({ injuries, onToggle, onProceed, onBack }) => {
             const commonInjuries = [
                 'Shoulder impingement',
                 'Lower back pain',
@@ -534,6 +644,7 @@
 
             return (
                 <div className="p-6">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <h2 className="text-2xl font-bold mb-6">Any injuries to be careful of?</h2>
                     <div className="space-y-3 mb-6">
                         {commonInjuries.map(injury => (
@@ -561,9 +672,10 @@
         };
 
         // Exercise Selection Component
-        const ExerciseSelection = ({ exercises, selectedExercises, onSelect, onCreateCircuit, onStartIndividual, injuries }) => {
+        const ExerciseSelection = ({ exercises, selectedExercises, onSelect, onCreateCircuit, onStartIndividual, injuries, expandedExercises, onToggleExpansion, exerciseDetails, onDetailsChange, onBack }) => {
             return (
                 <div className="p-6">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <h2 className="text-2xl font-bold mb-6">Choose Your Exercises</h2>
                     
                     {injuries.length > 0 && (
@@ -610,8 +722,53 @@
                                         >
                                             <CheckIcon />
                                         </button>
+                                        <button
+                                            onClick={() => onToggleExpansion(exercise.name)}
+                                            className="bg-gray-600 hover:bg-gray-500 text-white p-2 rounded-lg transition"
+                                        >
+                                            {expandedExercises[exercise.name] ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                                        </button>
                                     </div>
                                 </div>
+                                
+                                {expandedExercises[exercise.name] && (
+                                    <div className="mt-4 pt-4 border-t border-gray-700">
+                                        <h4 className="font-bold mb-3">Customize Exercise</h4>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <div>
+                                                <label className="text-sm text-gray-300">Sets</label>
+                                                <input
+                                                    type="number"
+                                                    value={exerciseDetails[exercise.name]?.sets || exercise.sets}
+                                                    onChange={(e) => onDetailsChange(exercise.name, 'sets', e.target.value)}
+                                                    className="w-full bg-gray-700 text-white p-2 rounded-lg mt-1"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-sm text-gray-300">Reps</label>
+                                                <input
+                                                    type="text"
+                                                    value={exerciseDetails[exercise.name]?.reps || exercise.reps}
+                                                    onChange={(e) => onDetailsChange(exercise.name, 'reps', e.target.value)}
+                                                    className="w-full bg-gray-700 text-white p-2 rounded-lg mt-1"
+                                                    placeholder="e.g., 8-12 or 30 seconds"
+                                                />
+                                            </div>
+                                            {exercise.hasWeight && (
+                                                <div>
+                                                    <label className="text-sm text-gray-300">Weight</label>
+                                                    <input
+                                                        type="text"
+                                                        value={exerciseDetails[exercise.name]?.weight || exercise.weight}
+                                                        onChange={(e) => onDetailsChange(exercise.name, 'weight', e.target.value)}
+                                                        className="w-full bg-gray-700 text-white p-2 rounded-lg mt-1"
+                                                        placeholder="e.g., 50 lbs or Body weight"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -638,23 +795,49 @@
         };
 
         // Exercise Ordering Component
-        const ExerciseOrdering = ({ exercises, onStart }) => {
+        const ExerciseOrdering = ({ exercises, onStart, onReorder, onBack }) => {
+            const [sortableId] = useState('exercise-list');
+
+            useEffect(() => {
+                if (exercises.length > 1) {
+                    const sortable = new Sortable(document.getElementById(sortableId), {
+                        animation: 150,
+                        onEnd: (evt) => {
+                            const newOrder = [...exercises];
+                            const [removed] = newOrder.splice(evt.oldIndex, 1);
+                            newOrder.splice(evt.newIndex, 0, removed);
+                            onReorder(newOrder);
+                        }
+                    });
+                    return () => sortable.destroy();
+                }
+            }, [exercises]);
+
             return (
                 <div className="p-6">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <h2 className="text-2xl font-bold mb-6">Your Workout Plan</h2>
-                    <div className="space-y-4 mb-6">
+                    <div id={sortableId} className="space-y-4 mb-6">
                         {exercises.map((exercise, index) => (
-                            <div key={exercise.name} className="bg-gray-800 rounded-xl p-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
-                                        {index + 1}
+                            <div key={exercise.name} className="bg-gray-800 rounded-xl p-4 flex items-center gap-4">
+                                {exercises.length > 1 && (
+                                    <div className="text-gray-400 cursor-move">
+                                        <GripIcon />
                                     </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-bold">{exercise.name}</h3>
-                                        <p className="text-sm text-gray-300">
-                                            {exercise.sets} sets × {exercise.reps} reps
+                                )}
+                                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                                    {index + 1}
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-bold">{exercise.name}</h3>
+                                    <p className="text-sm text-gray-300">
+                                        {exercise.customSets || exercise.sets} sets × {exercise.customReps || exercise.reps} reps
+                                    </p>
+                                    {exercise.hasWeight && (
+                                        <p className="text-sm text-gray-400">
+                                            Weight: {exercise.customWeight || exercise.weight}
                                         </p>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -670,12 +853,13 @@
         };
 
         // Active Workout Component
-        const ActiveWorkout = ({ exercise, exerciseIndex, totalExercises, workoutLog, onSetLog, onAddSet, onRemoveSet, onNext, onSkip, onChange }) => {
+        const ActiveWorkout = ({ exercise, exerciseIndex, totalExercises, workoutLog, onSetLog, onAddSet, onRemoveSet, onNext, onSkip, onChange, onComplete, onBack }) => {
             const currentSets = workoutLog[exercise.name] || {};
             const setCount = Object.keys(currentSets).length;
 
             return (
                 <div className="p-6">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <div className="text-center mb-6">
                         <h2 className="text-2xl font-bold">{exercise.name}</h2>
                         <p className="text-gray-300">
@@ -684,11 +868,21 @@
                     </div>
 
                     <div className="bg-gray-800 rounded-xl p-4 mb-6">
-                        <h3 className="font-bold mb-2">Target: {exercise.sets} sets × {exercise.reps} reps</h3>
+                        <h3 className="font-bold mb-2">Target: {exercise.customSets || exercise.sets} sets × {exercise.customReps || exercise.reps} reps</h3>
                         <p className="text-sm text-gray-300">Equipment: {exercise.equipment}</p>
                         {exercise.injuryNotes && (
                             <p className="text-sm text-yellow-400 mt-2">⚠️ {exercise.injuryNotes}</p>
                         )}
+                    </div>
+
+                    <div className="mb-6">
+                        <button
+                            onClick={() => window.open(getYouTubeSearchUrl(exercise.name), '_blank')}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2"
+                        >
+                            <PlayIcon />
+                            Watch Exercise Tutorial
+                        </button>
                     </div>
 
                     <div className="space-y-4 mb-6">
@@ -700,16 +894,18 @@
                                         {parseInt(setIndex) + 1}
                                     </div>
                                     <div className="flex-1 grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-sm text-gray-300">Weight</label>
-                                            <input
-                                                type="text"
-                                                value={currentSets[setIndex]?.weight || ''}
-                                                onChange={(e) => onSetLog(exercise.name, setIndex, 'weight', e.target.value)}
-                                                className="w-full bg-gray-700 text-white p-2 rounded-lg"
-                                                placeholder="Weight"
-                                            />
-                                        </div>
+                                        {exercise.hasWeight && (
+                                            <div>
+                                                <label className="text-sm text-gray-300">Weight</label>
+                                                <input
+                                                    type="text"
+                                                    value={currentSets[setIndex]?.weight || ''}
+                                                    onChange={(e) => onSetLog(exercise.name, setIndex, 'weight', e.target.value)}
+                                                    className="w-full bg-gray-700 text-white p-2 rounded-lg"
+                                                    placeholder="Weight"
+                                                />
+                                            </div>
+                                        )}
                                         <div>
                                             <label className="text-sm text-gray-300">Reps</label>
                                             <input
@@ -742,11 +938,11 @@
 
                     <div className="space-y-4">
                         <button
-                            onClick={onNext}
+                            onClick={onComplete}
                             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2"
                         >
-                            <ArrowRightIcon />
-                            Next Exercise
+                            <CheckIcon />
+                            Complete Exercise
                         </button>
                         
                         <div className="grid grid-cols-2 gap-4">
@@ -769,9 +965,10 @@
         };
 
         // Workout Complete Component
-        const WorkoutComplete = ({ onComplete }) => {
+        const WorkoutComplete = ({ onComplete, onBack }) => {
             return (
                 <div className="p-6 text-center">
+                    <BackButton onClick={onBack} className="mb-6" />
                     <div className="mb-8">
                         <div className="bg-green-600 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                             <CheckIcon />
